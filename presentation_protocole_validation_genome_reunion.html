@@ -138,6 +138,30 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
 
 .tag{display:inline-block; font-family:var(--font-ui); font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:3px 10px; border-radius:6px; background:var(--sand); color:var(--navy)}
 
+/* ---------- profile cards (gauge + composition mini-chart) ---------- */
+.profile-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px); margin-bottom:clamp(20px,2.4vh,30px)}
+.profile-card{background:#fff; border:1px solid var(--pebble-light); border-radius:14px; padding:clamp(14px,1.6vh,20px) clamp(14px,1.4vw,20px); display:flex; flex-direction:column; gap:clamp(8px,1vh,12px)}
+.profile-head{display:flex; align-items:baseline; gap:9px}
+.profile-tag{font-family:var(--font-ui); font-weight:700; font-size:.76rem; color:#fff; background:var(--navy); border-radius:6px; padding:2px 9px; flex:none}
+.profile-head h3{font-family:var(--font-head); font-weight:600; color:var(--navy); font-size:clamp(1.05rem,1.3vw,1.35rem)}
+.gauge{width:100%; height:auto; display:block}
+.gauge-band{fill:none; stroke-width:9; stroke-linecap:round}
+.gauge-band.low{stroke:var(--teal)}
+.gauge-band.med{stroke:var(--amber)}
+.gauge-band.high{stroke:var(--coral)}
+.gauge-needle{stroke:var(--navy); stroke-width:3; stroke-linecap:round}
+.gauge-pivot{fill:var(--navy)}
+.gauge-label{font-family:var(--font-ui); font-size:clamp(.7rem,.85vw,.86rem); color:var(--pebble); text-align:center; letter-spacing:.02em; margin-top:-6px}
+.gauge-label strong{color:var(--navy)}
+.mini-rows-wrap{position:relative}
+.mini-rows{display:flex; flex-direction:column; gap:4px}
+.mini-row{display:flex; height:9px; border-radius:3px; overflow:hidden; background:var(--pebble-light)}
+.mini-row span{height:100%}
+.isolat-stripe{position:absolute; top:0; bottom:0; left:57%; width:9%; background:rgba(232,101,74,.55); border-radius:3px}
+.profile-role{font-family:var(--font-ui); font-size:clamp(.82rem,.95vw,.94rem); font-weight:700; color:var(--navy)}
+.profile-role .tagline{color:var(--coral); text-transform:uppercase; letter-spacing:.06em; font-size:.66rem; margin-right:6px}
+.profile-desc{font-size:clamp(.85rem,1vw,1rem); color:var(--pebble); line-height:1.45}
+
 /* ---------- HERO ---------- */
 .slide.hero{background:var(--navy)}
 .hero .slide-inner{max-width:min(1200px,88vw); justify-content:center; padding:0 clamp(48px,6vw,110px)}
@@ -183,7 +207,7 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
 
 @media (max-width:900px){
   .slide-inner{padding:56px 28px 84px}
-  .grid-3,.grid-4{grid-template-columns:1fr 1fr}
+  .grid-3,.grid-4,.profile-grid{grid-template-columns:1fr 1fr}
   .toc-list{columns:1}
   .hero .slide-inner{padding:0 28px}
 }
@@ -310,14 +334,79 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
     <div class="slide-kicker"><span class="num">05 / 12</span> 3 · Profils de population</div>
     <h2 class="slide-title">Trois mondes simulés, trois niveaux de difficulté</h2>
     <p class="slide-lede">Les profils ne décrivent pas La Réunion réelle : ce sont des terrains d'essai contrôlés, à vérité biologique connue, conçus pour stresser la méthode différemment.</p>
-    <table class="deck-table">
-      <thead><tr><th>Profil</th><th>Rôle</th><th>Question posée</th></tr></thead>
-      <tbody>
-        <tr><td><strong>A · Homogène</strong></td><td>Contrôle négatif</td><td>La méthode évite-t-elle d'inventer un avantage sans structure ?</td></tr>
-        <tr><td><strong>C · Mixte-hétérogène</strong></td><td>Scénario central</td><td>Exploite-t-elle correctement une structure complexe mais observable ?</td></tr>
-        <tr><td><strong>D · Structure cryptique</strong></td><td>Stress-test adverse</td><td>Reste-t-elle robuste quand la structure est cachée à l'algorithme ?</td></tr>
-      </tbody>
-    </table>
+    <div class="profile-grid">
+
+      <div class="profile-card">
+        <div class="profile-head"><span class="profile-tag">A</span><h3>Homogène</h3></div>
+        <svg class="gauge" viewBox="0 0 120 66" aria-hidden="true">
+          <path class="gauge-band low" d="M10,60 A50,50 0 0,1 35,16.7"/>
+          <path class="gauge-band med" d="M35,16.7 A50,50 0 0,1 85,16.7"/>
+          <path class="gauge-band high" d="M85,16.7 A50,50 0 0,1 110,60"/>
+          <line class="gauge-needle" x1="60" y1="60" x2="23.6" y2="39"/>
+          <circle class="gauge-pivot" cx="60" cy="60" r="4"/>
+        </svg>
+        <div class="gauge-label">Complexité : <strong>faible</strong></div>
+        <div class="mini-rows-wrap">
+          <div class="mini-rows">
+            <div class="mini-row"><span style="flex-basis:24%;background:var(--teal)"></span><span style="flex-basis:26%;background:var(--amber)"></span><span style="flex-basis:25%;background:var(--blue)"></span><span style="flex-basis:25%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:26%;background:var(--teal)"></span><span style="flex-basis:24%;background:var(--amber)"></span><span style="flex-basis:26%;background:var(--blue)"></span><span style="flex-basis:24%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:25%;background:var(--teal)"></span><span style="flex-basis:25%;background:var(--amber)"></span><span style="flex-basis:24%;background:var(--blue)"></span><span style="flex-basis:26%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:24%;background:var(--teal)"></span><span style="flex-basis:25%;background:var(--amber)"></span><span style="flex-basis:26%;background:var(--blue)"></span><span style="flex-basis:25%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:26%;background:var(--teal)"></span><span style="flex-basis:26%;background:var(--amber)"></span><span style="flex-basis:24%;background:var(--blue)"></span><span style="flex-basis:24%;background:var(--green)"></span></div>
+          </div>
+        </div>
+        <div class="profile-role"><span class="tagline">Rôle</span>Contrôle négatif</div>
+        <p class="profile-desc">Vérifie que la méthode ne crée pas de gain artificiel quand la population est très peu structurée.</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-head"><span class="profile-tag">C</span><h3>Mixte-hétérogène</h3></div>
+        <svg class="gauge" viewBox="0 0 120 66" aria-hidden="true">
+          <path class="gauge-band low" d="M10,60 A50,50 0 0,1 35,16.7"/>
+          <path class="gauge-band med" d="M35,16.7 A50,50 0 0,1 85,16.7"/>
+          <path class="gauge-band high" d="M85,16.7 A50,50 0 0,1 110,60"/>
+          <line class="gauge-needle" x1="60" y1="60" x2="60" y2="18"/>
+          <circle class="gauge-pivot" cx="60" cy="60" r="4"/>
+        </svg>
+        <div class="gauge-label">Complexité : <strong>modérée</strong></div>
+        <div class="mini-rows-wrap">
+          <div class="mini-rows">
+            <div class="mini-row"><span style="flex-basis:45%;background:var(--blue)"></span><span style="flex-basis:15%;background:var(--amber)"></span><span style="flex-basis:20%;background:var(--teal)"></span><span style="flex-basis:20%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:15%;background:var(--blue)"></span><span style="flex-basis:38%;background:var(--amber)"></span><span style="flex-basis:32%;background:var(--teal)"></span><span style="flex-basis:15%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:30%;background:var(--blue)"></span><span style="flex-basis:8%;background:var(--amber)"></span><span style="flex-basis:12%;background:var(--teal)"></span><span style="flex-basis:50%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:22%;background:var(--blue)"></span><span style="flex-basis:30%;background:var(--amber)"></span><span style="flex-basis:10%;background:var(--teal)"></span><span style="flex-basis:38%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:18%;background:var(--blue)"></span><span style="flex-basis:12%;background:var(--amber)"></span><span style="flex-basis:55%;background:var(--teal)"></span><span style="flex-basis:15%;background:var(--green)"></span></div>
+          </div>
+        </div>
+        <div class="profile-role"><span class="tagline">Rôle</span>Scénario central</div>
+        <p class="profile-desc">Monde synthétique testant la capacité à exploiter une structure complexe mais observable (admixture, effets fondateurs).</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-head"><span class="profile-tag">D</span><h3>Structure cryptique</h3></div>
+        <svg class="gauge" viewBox="0 0 120 66" aria-hidden="true">
+          <path class="gauge-band low" d="M10,60 A50,50 0 0,1 35,16.7"/>
+          <path class="gauge-band med" d="M35,16.7 A50,50 0 0,1 85,16.7"/>
+          <path class="gauge-band high" d="M85,16.7 A50,50 0 0,1 110,60"/>
+          <line class="gauge-needle" x1="60" y1="60" x2="96.4" y2="39"/>
+          <circle class="gauge-pivot" cx="60" cy="60" r="4"/>
+        </svg>
+        <div class="gauge-label">Complexité : <strong>élevée</strong></div>
+        <div class="mini-rows-wrap">
+          <div class="mini-rows">
+            <div class="mini-row"><span style="flex-basis:42%;background:var(--blue)"></span><span style="flex-basis:15%;background:var(--amber)"></span><span style="flex-basis:23%;background:var(--teal)"></span><span style="flex-basis:20%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:14%;background:var(--blue)"></span><span style="flex-basis:36%;background:var(--amber)"></span><span style="flex-basis:35%;background:var(--teal)"></span><span style="flex-basis:15%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:28%;background:var(--blue)"></span><span style="flex-basis:9%;background:var(--amber)"></span><span style="flex-basis:11%;background:var(--teal)"></span><span style="flex-basis:52%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:20%;background:var(--blue)"></span><span style="flex-basis:28%;background:var(--amber)"></span><span style="flex-basis:12%;background:var(--teal)"></span><span style="flex-basis:40%;background:var(--green)"></span></div>
+            <div class="mini-row"><span style="flex-basis:16%;background:var(--blue)"></span><span style="flex-basis:10%;background:var(--amber)"></span><span style="flex-basis:58%;background:var(--teal)"></span><span style="flex-basis:16%;background:var(--green)"></span></div>
+          </div>
+          <div class="isolat-stripe" title="Isolat cryptique — caché à l'algorithme"></div>
+        </div>
+        <div class="profile-role"><span class="tagline">Rôle</span>Structure cryptique</div>
+        <p class="profile-desc">Vérifie la robustesse lorsqu'une partie de la structure (isolat) est cachée à l'algorithme de sélection.</p>
+      </div>
+
+    </div>
     <div class="oral">
       <span class="label">À dire à l'oral</span>
       <p>« Les profils ne sont pas des portraits de La Réunion. Ce sont des terrains d'essai : un contrôle homogène, un scénario central complexe, et un stress-test avec structure cachée. »</p>
