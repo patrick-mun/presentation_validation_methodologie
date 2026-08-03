@@ -163,16 +163,28 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
 .profile-desc{font-size:clamp(.85rem,1vw,1rem); color:var(--pebble); line-height:1.45}
 
 /* ---------- HERO ---------- */
-.slide.hero{background:var(--navy)}
-.hero .slide-inner{max-width:min(1200px,88vw); justify-content:center; padding:0 clamp(48px,6vw,110px)}
-.hero-kicker{font-family:var(--font-ui); font-size:clamp(.85rem,1vw,1.05rem); font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--sky); margin-bottom:clamp(20px,2.6vh,32px)}
-.hero h1{font-family:var(--font-head); font-weight:600; color:#fff; font-size:clamp(2.8rem,6vw,5.2rem); line-height:1.05; letter-spacing:-.01em; max-width:15ch; margin-bottom:clamp(24px,3vh,36px)}
-.hero .subtitle{font-size:clamp(1.15rem,1.6vw,1.6rem); color:var(--sky); max-width:58ch; line-height:1.6; margin-bottom:clamp(40px,5vh,60px)}
-.hero-meta{display:flex; gap:clamp(36px,4vw,64px); padding-top:clamp(26px,3vh,36px); border-top:1px solid rgba(159,211,224,.25); flex-wrap:wrap}
-.hero-meta div{font-size:clamp(.9rem,1.05vw,1.1rem); color:var(--sky)}
-.hero-meta strong{display:block; font-family:var(--font-ui); font-size:clamp(.7rem,.8vw,.82rem); letter-spacing:.1em; text-transform:uppercase; color:rgba(159,211,224,.7); margin-bottom:6px; font-weight:600}
-.hero-meta span{color:#fff}
-.hero .brand-word, .hero .brand-word em{color:#fff}
+.slide.hero{background:var(--mist); overflow:hidden}
+.hero-bg{position:absolute; inset:0; pointer-events:none; z-index:0}
+.hero-bg svg{position:absolute; width:100%; height:100%}
+.hero .slide-inner{position:relative; z-index:1; max-width:min(1440px,92vw); justify-content:center; padding:0 clamp(48px,6vw,100px)}
+.hero-grid{display:grid; grid-template-columns:1.2fr 1fr; gap:clamp(36px,4.5vw,72px); align-items:center}
+.hero-kicker{font-family:var(--font-ui); font-size:clamp(.8rem,.95vw,1rem); font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--teal); margin-bottom:clamp(16px,2.2vh,26px)}
+.hero h1{font-family:var(--font-head); font-weight:700; color:var(--navy); font-size:clamp(2.2rem,4.4vw,3.8rem); line-height:1.12; letter-spacing:-.01em; margin-bottom:clamp(14px,1.8vh,22px)}
+.hero .tagline{font-family:var(--font-ui); font-weight:600; font-size:clamp(1.1rem,1.5vw,1.45rem); color:var(--teal); line-height:1.4; max-width:34ch; margin-bottom:clamp(18px,2.2vh,26px)}
+.hero .subtitle{font-size:clamp(1rem,1.15vw,1.2rem); color:var(--pebble); max-width:46ch; line-height:1.6; margin-bottom:clamp(32px,4vh,48px)}
+.hero-meta{display:flex; gap:clamp(28px,3vw,48px); padding-top:clamp(22px,2.8vh,30px); border-top:1px solid var(--pebble-light); flex-wrap:wrap}
+.hero-meta div{font-size:clamp(.84rem,.95vw,.98rem); color:var(--pebble)}
+.hero-meta strong{display:block; font-family:var(--font-ui); font-size:clamp(.66rem,.75vw,.76rem); letter-spacing:.1em; text-transform:uppercase; color:var(--pebble); margin-bottom:5px; font-weight:600}
+.hero-meta span{color:var(--navy); font-weight:600}
+
+.idea-card{
+  position:relative; background:#fff; padding:clamp(26px,3vw,40px) clamp(28px,3vw,42px);
+  box-shadow:0 12px 32px rgba(15,58,86,.12); border:1px solid var(--pebble-light);
+  clip-path:polygon(0 0,100% 0,100% 78%,86% 100%,0 100%);
+}
+.idea-card::before{content:''; position:absolute; top:0; left:0; right:0; height:5px; background:var(--coral)}
+.idea-label{display:block; font-family:var(--font-ui); font-weight:700; font-size:clamp(.72rem,.85vw,.86rem); letter-spacing:.08em; text-transform:uppercase; color:var(--navy); margin-bottom:clamp(12px,1.6vh,18px)}
+.idea-card p{font-size:clamp(1.02rem,1.25vw,1.3rem); line-height:1.55; color:var(--ink)}
 
 /* ---------- SOMMAIRE ---------- */
 .toc-list{list-style:none; columns:2; column-gap:clamp(48px,5vw,80px)}
@@ -210,6 +222,7 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
   .grid-3,.grid-4,.profile-grid{grid-template-columns:1fr 1fr}
   .toc-list{columns:1}
   .hero .slide-inner{padding:0 28px}
+  .hero-grid{grid-template-columns:1fr; gap:28px}
 }
 
 @media print{
@@ -230,14 +243,33 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
 
 <!-- ============ SLIDE 0 — HERO ============ -->
 <section class="slide hero active" data-title="Accueil">
+  <div class="hero-bg" aria-hidden="true">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="1440" cy="0" r="260" fill="none" stroke="#1E6E8C" stroke-width="1.5" opacity=".12"/>
+      <circle cx="1440" cy="0" r="360" fill="none" stroke="#1E6E8C" stroke-width="1.5" opacity=".08"/>
+      <circle cx="0" cy="900" r="220" fill="none" stroke="#E8654A" stroke-width="1.5" opacity=".1"/>
+      <circle cx="0" cy="900" r="320" fill="none" stroke="#E8654A" stroke-width="1.5" opacity=".07"/>
+      <path d="M0,760 C120,700 240,700 360,760 C480,820 600,820 720,760 C840,700 960,700 1080,760 C1200,820 1320,820 1440,760" fill="none" stroke="#0F3A56" stroke-width="1.5" opacity=".07"/>
+      <path d="M0,820 C120,760 240,760 360,820 C480,880 600,880 720,820 C840,760 960,760 1080,820 C1200,880 1320,880 1440,820" fill="none" stroke="#1E6E8C" stroke-width="1.5" opacity=".07"/>
+    </svg>
+  </div>
   <div class="slide-inner">
-    <div class="hero-kicker">Génome Réunion · Support de présentation</div>
-    <h1>Protocole de validation de la stratégie de sélection WGS</h1>
-    <p class="subtitle">Comment démontrer, avant tout déploiement, qu'une sélection géo-ancestrale de 350 génomes complets construit un panel de référence plus utile qu'un tirage au hasard — de façon contrôlée, pré-enregistrée et auditable.</p>
-    <div class="hero-meta">
-      <div><strong>Fondé sur</strong><span>METHODOLOGIE_validation_protocole_v1_5</span></div>
-      <div><strong>Cadre</strong><span>Laboratoire de Génétique · CHU de La Réunion</span></div>
-      <div><strong>Version</strong><span>1.0 · 3 août 2026</span></div>
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="hero-kicker">Génome Réunion · Support de présentation</div>
+        <h1>Génome Réunion : validation de la méthodologie de sélection</h1>
+        <p class="tagline">De la boîte noire à la démonstration contrôlée et auditable.</p>
+        <p class="subtitle">Comment démontrer, avant tout déploiement, qu'une sélection géo-ancestrale de 350 génomes complets construit un panel de référence plus utile qu'un tirage au hasard.</p>
+        <div class="hero-meta">
+          <div><strong>Fondé sur</strong><span>METHODOLOGIE_validation_protocole_v1_5</span></div>
+          <div><strong>Cadre</strong><span>Laboratoire de Génétique · CHU de La Réunion</span></div>
+          <div><strong>Version</strong><span>1.0 · 3 août 2026</span></div>
+        </div>
+      </div>
+      <div class="idea-card">
+        <span class="idea-label">Idée directrice</span>
+        <p>Le protocole ne cherche pas seulement à présenter une stratégie de sélection. Il organise une démonstration contrôlée, pré-enregistrée et auditable de sa capacité à construire un panel WGS utile pour une population admixée.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -638,7 +670,7 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
     progressFill.style.width = ((i) / (total - 1) * 100) + '%';
     prevBtn.disabled = i === 0;
     nextBtn.disabled = i === total - 1;
-    var onDark = slides[i].classList.contains('hero') || slides[i].classList.contains('closing');
+    var onDark = slides[i].classList.contains('closing');
     chromeTop.classList.toggle('on-dark', onDark);
   }
 
