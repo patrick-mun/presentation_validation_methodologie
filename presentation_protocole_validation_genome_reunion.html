@@ -167,15 +167,16 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
 .hero-bg{position:absolute; inset:0; pointer-events:none; z-index:0}
 .hero-bg svg{position:absolute; width:100%; height:100%}
 .hero .slide-inner{position:relative; z-index:1; max-width:min(1440px,92vw); justify-content:center; padding:0 clamp(48px,6vw,100px)}
-.hero-grid{display:grid; grid-template-columns:1.2fr 1fr; gap:clamp(36px,4.5vw,72px); align-items:center}
+.hero-grid{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:clamp(36px,4.5vw,72px); align-items:center}
+.hero-left{min-width:0}
 .hero-kicker{font-family:var(--font-ui); font-size:clamp(.8rem,.95vw,1rem); font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--teal); margin-bottom:clamp(16px,2.2vh,26px)}
 .hero h1{font-family:var(--font-head); font-weight:700; color:var(--navy); font-size:clamp(2.2rem,4.4vw,3.8rem); line-height:1.12; letter-spacing:-.01em; margin-bottom:clamp(14px,1.8vh,22px)}
 .hero .tagline{font-family:var(--font-ui); font-weight:600; font-size:clamp(1.1rem,1.5vw,1.45rem); color:var(--teal); line-height:1.4; max-width:34ch; margin-bottom:clamp(18px,2.2vh,26px)}
-.hero .subtitle{font-size:clamp(1rem,1.15vw,1.2rem); color:var(--pebble); max-width:46ch; line-height:1.6; margin-bottom:clamp(32px,4vh,48px)}
-.hero-meta{display:flex; gap:clamp(28px,3vw,48px); padding-top:clamp(22px,2.8vh,30px); border-top:1px solid var(--pebble-light); flex-wrap:wrap}
-.hero-meta div{font-size:clamp(.84rem,.95vw,.98rem); color:var(--pebble)}
-.hero-meta strong{display:block; font-family:var(--font-ui); font-size:clamp(.66rem,.75vw,.76rem); letter-spacing:.1em; text-transform:uppercase; color:var(--pebble); margin-bottom:5px; font-weight:600}
-.hero-meta span{color:var(--navy); font-weight:600}
+.hero .subtitle{font-size:clamp(1rem,1.15vw,1.2rem); color:var(--pebble); max-width:46ch; line-height:1.6; margin-bottom:0}
+.hero-meta{display:flex; align-items:baseline; gap:clamp(24px,2.6vw,40px); margin-top:clamp(28px,3.6vh,44px); padding-top:clamp(14px,1.8vh,20px); border-top:1px solid var(--pebble-light); flex-wrap:nowrap}
+.hero-meta div{display:flex; align-items:baseline; gap:6px; font-size:clamp(.72rem,.8vw,.82rem); color:var(--pebble); white-space:nowrap}
+.hero-meta strong{font-family:var(--font-ui); font-size:clamp(.6rem,.66vw,.66rem); letter-spacing:.08em; text-transform:uppercase; color:var(--pebble); font-weight:500; flex:none}
+.hero-meta span{color:var(--navy); font-weight:400}
 
 .idea-card{
   position:relative; padding:clamp(46px,5vw,64px) clamp(12px,1.6vw,22px) 0 clamp(12px,1.6vw,22px);
@@ -263,17 +264,17 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
         <h1>Génome Réunion : validation de la méthodologie de sélection</h1>
         <p class="tagline">De la boîte noire à la démonstration contrôlée et auditable.</p>
         <p class="subtitle">Comment démontrer, avant tout déploiement, qu'une sélection géo-ancestrale de 350 génomes complets construit un panel de référence plus utile qu'un tirage au hasard.</p>
-        <div class="hero-meta">
-          <div><strong>Fondé sur</strong><span>METHODOLOGIE_validation_protocole_v1_5</span></div>
-          <div><strong>Cadre</strong><span>Laboratoire de Génétique · CHU de La Réunion</span></div>
-          <div><strong>Version</strong><span>1.0 · 3 août 2026</span></div>
-        </div>
       </div>
       <div class="idea-card">
         <div class="idea-rule"></div>
         <span class="idea-label">Idée directrice</span>
         <p>Le protocole ne cherche pas seulement à présenter une stratégie de sélection. Il organise une démonstration contrôlée, pré-enregistrée et auditable de sa capacité à construire un panel WGS utile pour une population admixée.</p>
       </div>
+    </div>
+    <div class="hero-meta">
+      <div><strong>Fondé sur</strong><span>METHODOLOGIE_validation_protocole_v1_5</span></div>
+      <div><strong>Cadre</strong><span>Laboratoire de Génétique · CHU de La Réunion</span></div>
+      <div><strong>Version</strong><span>1.0 · 3 août 2026</span></div>
     </div>
   </div>
 </section>
