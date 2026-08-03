@@ -170,7 +170,11 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
 .closing .foot{font-size:.76rem; color:rgba(159,211,224,.7); letter-spacing:.03em}
 
 /* ---------- click zones ---------- */
-.clickzone{position:absolute; top:64px; bottom:56px; width:14%; z-index:4; cursor:pointer; background:transparent}
+.clickzone{
+  position:absolute; top:64px; bottom:56px; width:14%; z-index:4; cursor:pointer;
+  background:transparent; border:none; outline:none; -webkit-appearance:none; appearance:none; padding:0;
+}
+.clickzone:focus, .clickzone:focus-visible{outline:none; box-shadow:none}
 .clickzone.left{left:0} .clickzone.right{right:0}
 
 @media (max-width:900px){
