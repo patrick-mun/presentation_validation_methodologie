@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocole de validation — Génome Réunion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Génome Réunion — charte visuelle
+   Primaires : Lagon profond #0F3A56 · Récif #1E6E8C · Flamboyant #E8654A
+   Neutres   : Brume #FBFAF7 · Sable #EDEAE2 · Galet clair #E2DDD2 · Galet #6A7178 · Encre #16242E
+   Ancestrales (dataviz uniquement) : #2F4DA8 · #C0852C · #1E7A4D
+   Typo : Spectral (titres) · Space Grotesk (labels/UI) · DM Sans (texte courant)
+   ============================================================ */
+:root{
+  --navy:#0F3A56; --teal:#1E6E8C; --teal-dark:#165A74; --coral:#E8654A; --coral-dark:#D4543A;
+  --ink:#16242E; --pebble:#6A7178; --pebble-light:#E2DDD2; --sand:#EDEAE2; --mist:#FBFAF7;
+  --sky:#9FD3E0; --blue:#2F4DA8; --amber:#C0852C; --green:#1E7A4D;
+  --font-head:'Spectral',Georgia,serif; --font-ui:'Space Grotesk',sans-serif; --font-body:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font-body); color:var(--ink); background:var(--ink);
+  overflow:hidden; -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- deck shell ---------- */
+.deck{position:relative; width:100vw; height:100vh; overflow:hidden}
+.slide{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  background:var(--mist); opacity:0; visibility:hidden;
+  transform:translateX(24px);
+  transition:opacity .45s ease, transform .45s ease, visibility 0s linear .45s;
+}
+.slide.active{opacity:1; visibility:visible; transform:translateX(0); transition:opacity .45s ease, transform .45s ease;}
+.slide-inner{
+  flex:1; width:100%; max-width:1180px; margin:0 auto; padding:64px 72px 96px;
+  display:flex; flex-direction:column; justify-content:center; min-height:0;
+}
+.slide-kicker{
+  font-family:var(--font-ui); font-size:.72rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--teal); display:flex; align-items:center; gap:10px; margin-bottom:14px;
+}
+.slide-kicker .num{color:var(--coral)}
+h1.slide-title, h2.slide-title{
+  font-family:var(--font-head); font-weight:600; color:var(--navy); line-height:1.1;
+  letter-spacing:-.01em; margin-bottom:18px;
+}
+h2.slide-title{font-size:clamp(1.7rem,3vw,2.5rem); max-width:20ch}
+.slide-lede{font-size:1.05rem; color:var(--pebble); max-width:64ch; margin-bottom:22px; line-height:1.55}
+
+/* ---------- brand mark (wave motif) ---------- */
+.brand{display:flex; align-items:center; gap:10px}
+.brand svg{display:block}
+.brand-word{font-family:var(--font-head); font-weight:600; font-size:1rem; color:var(--navy)}
+.brand-word em{font-style:normal; font-weight:500; color:var(--teal)}
+
+/* ---------- top chrome ---------- */
+.chrome-top{
+  position:absolute; top:0; left:0; right:0; height:64px; display:flex; align-items:center;
+  justify-content:space-between; padding:0 32px; z-index:5; pointer-events:none;
+}
+.chrome-top .brand{opacity:.9}
+.progress-track{position:absolute; top:0; left:0; height:3px; background:var(--pebble-light); width:100%; z-index:6}
+.progress-fill{height:100%; background:linear-gradient(90deg,var(--teal),var(--coral)); transition:width .4s ease}
+
+/* ---------- bottom chrome ---------- */
+.chrome-bottom{
+  position:absolute; bottom:0; left:0; right:0; height:56px; display:flex; align-items:center;
+  justify-content:space-between; padding:0 32px; z-index:5;
+}
+.counter{font-family:var(--font-ui); font-size:.78rem; color:var(--pebble); letter-spacing:.04em}
+.counter strong{color:var(--navy)}
+.dots{display:flex; gap:6px}
+.dot{width:7px; height:7px; border-radius:50%; background:var(--pebble-light); cursor:pointer; transition:background .2s, transform .2s; border:none; padding:0}
+.dot.active{background:var(--coral); transform:scale(1.35)}
+.dot:hover{background:var(--teal)}
+.navbtn{
+  font-family:var(--font-ui); font-size:.78rem; font-weight:600; color:var(--navy); background:#fff;
+  border:1px solid var(--pebble-light); border-radius:100px; padding:9px 18px; cursor:pointer;
+  display:flex; align-items:center; gap:6px; transition:border-color .2s, color .2s, background .2s;
+}
+.navbtn:hover{border-color:var(--teal); color:var(--teal)}
+.navbtn:disabled{opacity:.35; cursor:default}
+.navbtn:disabled:hover{border-color:var(--pebble-light); color:var(--navy)}
+
+/* ---------- reusable content components ---------- */
+.oral{
+  border:1px solid var(--pebble-light); border-left:5px solid var(--coral); background:#fff7f4;
+  border-radius:0 10px 10px 0; padding:16px 20px; margin-top:28px;
+}
+.oral .label{font-family:var(--font-ui); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--coral); display:block; margin-bottom:6px}
+.oral p{font-size:.98rem; line-height:1.55; font-style:italic; color:var(--ink)}
+
+.callout{
+  border:1px solid var(--pebble-light); border-left:5px solid var(--navy); background:#eef4f8;
+  border-radius:0 10px 10px 0; padding:16px 20px;
+}
+.callout .label{font-family:var(--font-ui); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--navy); display:block; margin-bottom:6px}
+.callout p{font-size:.94rem; line-height:1.5}
+
+.flow{display:flex; gap:10px; margin:8px 0 22px; flex-wrap:wrap}
+.flow .step{
+  flex:1 1 130px; border:1.5px solid var(--teal); border-radius:10px; padding:12px 10px; text-align:center;
+  background:#fff; font-size:.86rem; font-weight:600; color:var(--navy); position:relative;
+}
+.flow .step:not(:last-child)::after{content:'›'; position:absolute; right:-11px; top:32%; font-size:1.4rem; color:var(--teal); background:var(--mist); line-height:1}
+
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+.grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:12px}
+.card{background:#fff; border:1px solid var(--pebble-light); border-radius:12px; padding:16px 18px}
+.card strong{font-family:var(--font-ui); color:var(--navy); font-size:.92rem; display:block; margin-bottom:5px}
+.card span{font-size:.86rem; color:var(--pebble); line-height:1.45}
+
+table.deck-table{width:100%; border-collapse:collapse; font-size:.86rem; margin-bottom:4px}
+table.deck-table th, table.deck-table td{border:1px solid var(--pebble-light); padding:8px 10px; text-align:left; vertical-align:top}
+table.deck-table th{background:var(--navy); color:#fff; font-family:var(--font-ui); font-weight:600; font-size:.78rem; letter-spacing:.03em}
+table.deck-table tr:nth-child(even) td{background:#fff}
+table.deck-table tr:nth-child(odd) td{background:var(--mist)}
+
+.stat-row{display:flex; gap:14px; margin-bottom:20px; flex-wrap:wrap}
+.stat{background:var(--navy); color:#fff; border-radius:12px; padding:14px 20px; min-width:130px}
+.stat .n{font-family:var(--font-head); font-size:1.6rem; font-weight:600; line-height:1}
+.stat .l{font-family:var(--font-ui); font-size:.68rem; letter-spacing:.04em; text-transform:uppercase; color:var(--sky); margin-top:4px}
+
+ul.bullets{list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:18px}
+ul.bullets li{font-size:.96rem; line-height:1.5; padding-left:22px; position:relative}
+ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--coral); font-weight:700}
+
+.tag{display:inline-block; font-family:var(--font-ui); font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:3px 10px; border-radius:6px; background:var(--sand); color:var(--navy)}
+
+/* ---------- HERO ---------- */
+.slide.hero{background:var(--navy)}
+.hero .slide-inner{max-width:980px; justify-content:center; padding:0 72px}
+.hero-kicker{font-family:var(--font-ui); font-size:.78rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--sky); margin-bottom:22px}
+.hero h1{font-family:var(--font-head); font-weight:600; color:#fff; font-size:clamp(2.4rem,5.2vw,4rem); line-height:1.06; letter-spacing:-.01em; max-width:15ch; margin-bottom:22px}
+.hero .subtitle{font-size:1.12rem; color:var(--sky); max-width:56ch; line-height:1.6; margin-bottom:40px}
+.hero-meta{display:flex; gap:36px; padding-top:26px; border-top:1px solid rgba(159,211,224,.25); flex-wrap:wrap}
+.hero-meta div{font-size:.86rem; color:var(--sky)}
+.hero-meta strong{display:block; font-family:var(--font-ui); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(159,211,224,.7); margin-bottom:4px; font-weight:600}
+.hero-meta span{color:#fff}
+.hero .brand-word, .hero .brand-word em{color:#fff}
+
+/* ---------- SOMMAIRE ---------- */
+.toc-list{list-style:none; columns:2; column-gap:48px}
+.toc-list li{break-inside:avoid; margin-bottom:4px}
+.toc-item{
+  display:flex; align-items:baseline; gap:12px; text-decoration:none; color:var(--ink);
+  padding:10px 4px; border-bottom:1px solid var(--pebble-light); cursor:pointer; background:none; border-left:none; border-right:none; border-top:none; width:100%; text-align:left; font:inherit;
+}
+.toc-item:hover{color:var(--teal)}
+.toc-item:hover .toc-n{color:var(--coral)}
+.toc-n{font-family:var(--font-ui); font-weight:700; color:var(--navy); font-size:.85rem; min-width:24px}
+.toc-t{font-size:.94rem; flex:1}
+
+/* ---------- CLOSING ---------- */
+.slide.closing{background:var(--navy)}
+.closing .slide-inner{justify-content:center; text-align:center; align-items:center; max-width:840px}
+.closing .brand{margin-bottom:34px}
+.closing h2{font-family:var(--font-head); color:#fff; font-weight:600; font-size:clamp(1.8rem,3.4vw,2.6rem); margin-bottom:16px}
+.closing .thanks{font-size:1.1rem; color:var(--sky); margin-bottom:44px; max-width:44ch}
+.authors{display:flex; flex-direction:column; gap:8px; margin-bottom:34px}
+.authors .name{font-family:var(--font-ui); font-weight:600; color:#fff; font-size:1rem}
+.authors .aff{font-size:.86rem; color:var(--sky)}
+.closing .foot{font-size:.76rem; color:rgba(159,211,224,.7); letter-spacing:.03em}
+
+/* ---------- click zones ---------- */
+.clickzone{
+  position:absolute; top:64px; bottom:56px; width:14%; z-index:4; cursor:pointer;
+  background:transparent; border:none; outline:none; -webkit-appearance:none; appearance:none; padding:0;
+}
+.clickzone:focus, .clickzone:focus-visible{outline:none; box-shadow:none}
+.clickzone.left{left:0} .clickzone.right{right:0}
+
+@media (max-width:900px){
+  .slide-inner{padding:56px 28px 84px}
+  .grid-3,.grid-4{grid-template-columns:1fr 1fr}
+  .toc-list{columns:1}
+  .hero .slide-inner{padding:0 28px}
+}
+
+@media print{
+  body{overflow:visible; background:#fff}
+  .chrome-top,.chrome-bottom,.clickzone,.progress-track{display:none}
+  .deck{height:auto; overflow:visible}
+  .slide{
+    position:static; opacity:1; visibility:visible; transform:none; transition:none;
+    page-break-after:always; height:100vh;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- ============ SLIDE 0 — HERO ============ -->
+<section class="slide hero active" data-title="Accueil">
+  <div class="slide-inner">
+    <div class="hero-kicker">Génome Réunion · Support de présentation</div>
+    <h1>Protocole de validation de la stratégie de sélection WGS</h1>
+    <p class="subtitle">Comment démontrer, avant tout déploiement, qu'une sélection géo-ancestrale de 350 génomes complets construit un panel de référence plus utile qu'un tirage au hasard — de façon contrôlée, pré-enregistrée et auditable.</p>
+    <div class="hero-meta">
+      <div><strong>Fondé sur</strong><span>METHODOLOGIE_validation_protocole_v1_5</span></div>
+      <div><strong>Cadre</strong><span>Laboratoire de Génétique · CHU de La Réunion</span></div>
+      <div><strong>Version</strong><span>1.0 · 3 août 2026</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 1 — SOMMAIRE ============ -->
+<section class="slide" data-title="Sommaire">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">—</span> Sommaire</div>
+    <h2 class="slide-title">Ce que nous allons parcourir</h2>
+    <p class="slide-lede">Douze étapes qui suivent la chaîne logique du protocole : définir la preuve à apporter, construire les terrains d'essai, comparer les stratégies, fixer les règles du verdict, tester la robustesse et le transfert réel, puis rendre la décision auditable.</p>
+    <ol class="toc-list" id="tocList"></ol>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 — VISION + RESUME (1/12) ============ -->
+<section class="slide" data-title="Vision d'ensemble">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">01 / 12</span> Vision d'ensemble</div>
+    <h2 class="slide-title">Une démonstration, pas seulement une méthode</h2>
+    <p class="slide-lede">Le protocole ne présuppose pas que la stratégie géo-ancestrale est la meilleure. Il organise la manière de le prouver : des scénarios simulés à vérité connue, des critères fixés avant analyse, une décision hiérarchisée et traçable.</p>
+    <div class="flow">
+      <div class="step">Définir ce que l'on veut prouver</div>
+      <div class="step">Construire des mondes simulés</div>
+      <div class="step">Comparer les stratégies</div>
+      <div class="step">Fixer les règles du verdict</div>
+      <div class="step">Tester robustesse et transfert réel</div>
+      <div class="step">Rendre la décision auditable</div>
+    </div>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Ce document n'est pas une simple présentation d'une méthode de sélection. Il explique comment nous allons démontrer objectivement qu'elle préserve la diversité génétique et améliore l'utilité du futur panel de référence, avant de l'appliquer aux données réelles. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 — 0. VERSION DE REFERENCE (2/12) ============ -->
+<section class="slide" data-title="Version de référence">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">02 / 12</span> 0 · Une version de référence</div>
+    <h2 class="slide-title">Un étalon commun, gelé avant les essais</h2>
+    <p class="slide-lede">Toutes les stratégies doivent être comparées dans un cadre méthodologique strictement stable. Trois lots de simulations, disjoints par fonction, empêchent qu'un résultat favorable ne vienne d'un ajustement des règles en cours de route.</p>
+    <div class="grid-3">
+      <div class="card"><strong>Lot pilote</strong><span>25 seeds pour qualifier et calibrer le simulateur, sans influencer les seuils ni les poids.</span></div>
+      <div class="card"><strong>Lot d'optimisation</strong><span>Seeds indépendants réservés au seul choix de l'allocation noyau / bras découverte.</span></div>
+      <div class="card"><strong>Lot confirmatoire</strong><span>Au moins 200 nouveaux seeds, générés après gel complet du simulateur et de la sélection.</span></div>
+    </div>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Avant de comparer les stratégies, nous figeons une version de référence. Si les résultats changent, nous savons que cela vient de la stratégie testée — jamais d'une modification du protocole en cours de route. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 — 1. PRINCIPE ET QUESTIONS (3/12) ============ -->
+<section class="slide" data-title="Principe et questions">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">03 / 12</span> 1 · Principe et questions</div>
+    <h2 class="slide-title">Trois questions décisives, posées avant tout calcul</h2>
+    <p class="slide-lede">Le protocole ne demande pas si l'algorithme est élégant, mais s'il préserve les propriétés utiles de la population et produit un panel plus performant pour l'imputation.</p>
+    <ul class="bullets">
+      <li><strong>Gain principal :</strong> la stratégie géo-ancestrale améliore-t-elle le R² d'imputation des variants rares par rapport au hasard, sur une cohorte test indépendante ?</li>
+      <li><strong>Justification de la complexité :</strong> ce gain dépasse-t-il celui d'un simple échantillonnage géographique, sans aucun score génétique ?</li>
+      <li><strong>Robustesse :</strong> la méthode reste-t-elle au moins équivalente au hasard quand le signal utile est caché à l'algorithme ?</li>
+    </ul>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Nous formulons d'abord les questions scientifiques. Les scénarios, les métriques et les seuils sont ensuite choisis uniquement parce qu'ils permettent d'y répondre objectivement. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5 — 2. CONTRAINTES (4/12) ============ -->
+<section class="slide" data-title="Contraintes et plan d'évaluation">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">04 / 12</span> 2 · Contraintes et plan d'évaluation</div>
+    <h2 class="slide-title">Le même terrain d'essai pour toutes les stratégies</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="n">2 500</div><div class="l">Cohorte candidate</div></div>
+      <div class="stat"><div class="n">350</div><div class="l">WGS sélectionnés</div></div>
+      <div class="stat"><div class="n">1 000</div><div class="l">Cohorte test indépendante</div></div>
+      <div class="stat"><div class="n">KING 0,0442</div><div class="l">Seuil d'apparentement</div></div>
+    </div>
+    <p class="slide-lede">Pour un même seed, toutes les stratégies affrontent exactement les mêmes individus, les mêmes variants et la même cohorte test — jamais leurs propres non-sélectionnés. Les comparaisons sont appariées par seed pour isoler l'effet de la stratégie.</p>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Cette section fixe le terrain expérimental. Toutes les stratégies affrontent les mêmes cohortes, les mêmes difficultés et les mêmes règles d'évaluation : la comparaison devient équitable. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6 — 3. PROFILS (5/12) ============ -->
+<section class="slide" data-title="Profils de population">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">05 / 12</span> 3 · Profils de population</div>
+    <h2 class="slide-title">Trois mondes simulés, trois niveaux de difficulté</h2>
+    <p class="slide-lede">Les profils ne décrivent pas La Réunion réelle : ce sont des terrains d'essai contrôlés, à vérité biologique connue, conçus pour stresser la méthode différemment.</p>
+    <table class="deck-table">
+      <thead><tr><th>Profil</th><th>Rôle</th><th>Question posée</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A · Homogène</strong></td><td>Contrôle négatif</td><td>La méthode évite-t-elle d'inventer un avantage sans structure ?</td></tr>
+        <tr><td><strong>C · Mixte-hétérogène</strong></td><td>Scénario central</td><td>Exploite-t-elle correctement une structure complexe mais observable ?</td></tr>
+        <tr><td><strong>D · Structure cryptique</strong></td><td>Stress-test adverse</td><td>Reste-t-elle robuste quand la structure est cachée à l'algorithme ?</td></tr>
+      </tbody>
+    </table>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Les profils ne sont pas des portraits de La Réunion. Ce sont des terrains d'essai : un contrôle homogène, un scénario central complexe, et un stress-test avec structure cachée. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7 — 4. STRATEGIES (6/12) ============ -->
+<section class="slide" data-title="Stratégies de sélection">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">06 / 12</span> 4 · Stratégies de sélection</div>
+    <h2 class="slide-title">Comparer plusieurs philosophies de sélection</h2>
+    <div class="grid-4">
+      <div class="card"><strong>Random</strong><span>Que produit l'absence de stratégie ?</span></div>
+      <div class="card"><strong>Géographie seule</strong><span>Les quotas territoriaux suffisent-ils ?</span></div>
+      <div class="card"><strong>Géo-ancestrale</strong><span>PCA, ADMIXTURE, IBD, ROH apportent-ils une information supplémentaire ?</span></div>
+      <div class="card"><strong>Bras découverte</strong><span>Garde-t-on une place pour les profils rares ou inattendus ?</span></div>
+    </div>
+    <p class="slide-lede">Le score <strong>S_div</strong> ne classe pas les « meilleurs individus » : il estime l'information nouvelle qu'un individu apporte au panel collectif.</p>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Nous comparons le hasard, la géographie seule et une stratégie intégrant plusieurs dimensions génétiques. L'objectif : sélectionner non les individus les plus remarquables, mais ceux qui enrichissent le plus le panel collectif. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8 — 5. METRIQUES (7/12) ============ -->
+<section class="slide" data-title="Métriques et estimands">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">07 / 12</span> 5 · Métriques et estimands</div>
+    <h2 class="slide-title">Définir précisément ce que signifie « meilleur »</h2>
+    <div class="grid-2">
+      <div class="card"><strong>Métrique</strong><span>Valeur observée : R² d'imputation, capture de variants, ROH, IBD.</span></div>
+      <div class="card"><strong>Estimand</strong><span>Quantité scientifique recherchée : le gain géo-ancestral par rapport au random.</span></div>
+    </div>
+    <p class="slide-lede" style="margin-top:18px">L'imputation des variants rares est le critère principal — elle mesure l'utilité finale du panel. PCA, ADMIXTURE, IBD et ROH servent surtout à expliquer pourquoi la stratégie réussit ou échoue.</p>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Nous avons un critère principal unique : l'amélioration de l'imputation par rapport au hasard, sur le scénario central. Les autres métriques servent à comprendre pourquoi la stratégie réussit ou échoue. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9 — 6. SEUILS (8/12) ============ -->
+<section class="slide" data-title="Seuils pré-enregistrés et puissance">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">08 / 12</span> 6 · Seuils pré-enregistrés et puissance</div>
+    <h2 class="slide-title">Décider avant de voir les résultats</h2>
+    <p class="slide-lede">Ce qui constitue une réussite, le nombre de simulations nécessaires, les comparateurs et les versions logicielles sont gelés avant la confirmation — pour empêcher tout ajustement a posteriori du seuil de succès.</p>
+    <div class="callout">
+      <span class="label">À retenir</span>
+      <p>Un seul test confirmatoire primaire ; les comparaisons secondaires suivent un ordre hiérarchique pré-enregistré et ne peuvent pas se substituer au critère principal.</p>
+    </div>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Nous définissons les règles du verdict avant le début du match. Si le résultat ne franchit pas le seuil pré-enregistré, nous ne pouvons pas changer le seuil après coup pour rendre la méthode positive. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10 — 7. ALLOCATION (9/12) ============ -->
+<section class="slide" data-title="Allocation noyau / découverte">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">09 / 12</span> 7 · Allocation noyau / bras découverte</div>
+    <h2 class="slide-title">La seule décision encore ouverte</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="n">322 / 28</div><div class="l">Point de départ, pas une vérité</div></div>
+    </div>
+    <p class="slide-lede">Comment répartir les 350 WGS entre sélection structurée (noyau géo-ancestral) et exploration (bras découverte) ? Plusieurs allocations sont comparées sur un lot indépendant, avec les mêmes seeds, puis l'allocation retenue est gelée définitivement.</p>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Une seule décision reste ouverte : combien de places attribuer au bras découverte. Nous la choisissons sur un lot indépendant, puis nous gelons cette allocation avant la confirmation. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11 — 8. SENSIBILITE (10/12) ============ -->
+<section class="slide" data-title="Sensibilité algorithmique">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">10 / 12</span> 8 · Sensibilité algorithmique</div>
+    <h2 class="slide-title">Vérifier la robustesse après le gel</h2>
+    <p class="slide-lede">Une méthode performante mais extrêmement sensible à un poids, à un ordre de traitement ou à un logiciel serait difficile à déployer. Ces analyses décrivent la fragilité éventuelle — elles ne servent jamais à choisir rétroactivement une configuration plus favorable.</p>
+    <ul class="bullets">
+      <li>Variation des poids de S_div et retrait successif d'une composante (LOCO)</li>
+      <li>Permutation de l'ordre greedy de sélection</li>
+      <li>Bruit de génotypage et effets de batch</li>
+      <li>Autres logiciels d'imputation ou panels externes</li>
+    </ul>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Nous vérifions que la conclusion reste stable lorsque les conditions varient légèrement — un poids, l'ordre des individus, un logiciel différent. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12 — 9+10. AUDIT PUCE & VALIDATION EXTERNE (11/12) ============ -->
+<section class="slide" data-title="Audit puce et validation externe">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">11 / 12</span> 9 · 10 — Du monde idéal au transfert réel</div>
+    <h2 class="slide-title">Passer de la simulation au flux réel</h2>
+    <div class="flow" style="margin-bottom:16px">
+      <div class="step">Cohorte WGS simulée</div>
+      <div class="step">Masquage aux marqueurs de la puce</div>
+      <div class="step">Sélection sur puce</div>
+      <div class="step">WGS des individus retenus</div>
+      <div class="step">Comparaison à la sélection directe</div>
+    </div>
+    <div class="grid-3">
+      <div class="card"><strong>SABE-WGS</strong><span>Direction du gain avec des génomes complets.</span></div>
+      <div class="card"><strong>EPIGEN</strong><span>Transfert de la logique sur cohorte génotypée puce.</span></div>
+      <div class="card"><strong>1000G</strong><span>Contrôle technique et sanity-check.</span></div>
+    </div>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Le projet réel sélectionnera les individus à partir d'une puce, pas du génome entier. Nous reproduisons ce flux, puis nous vérifions que les principes exploités restent observables dans des cohortes admixées indépendantes — sans prétendre trouver une autre Réunion. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13 — 11+12. DECISION & LIVRABLES (12/12) ============ -->
+<section class="slide" data-title="Décision hiérarchique et livrables">
+  <div class="slide-inner">
+    <div class="slide-kicker"><span class="num">12 / 12</span> 11 · 12 — Organiser et tracer le verdict</div>
+    <h2 class="slide-title">Un verdict hiérarchisé, une décision auditable</h2>
+    <div class="flow" style="margin-bottom:20px">
+      <div class="step">Porte 1<br>Critère principal</div>
+      <div class="step">Robustesse</div>
+      <div class="step">Audit puce → WGS</div>
+      <div class="step">Validation externe</div>
+      <div class="step">Décision finale</div>
+    </div>
+    <p class="slide-lede">Le critère principal est indispensable : s'il n'est pas franchi, aucune analyse secondaire ne peut sauver la méthode. Chaque conclusion est reliée à un livrable précis — seuils gelés, performances, sensibilité, journal de décision — pour qu'une équipe extérieure puisse reconstruire tout le raisonnement.</p>
+    <div class="oral">
+      <span class="label">À dire à l'oral</span>
+      <p>« Toutes les preuves n'ont pas le même poids. Une validation n'est complète que si une équipe extérieure peut reconstruire le raisonnement, du seuil gelé jusqu'à la décision finale. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14 — CLOSING ============ -->
+<section class="slide closing" data-title="Auteurs et remerciements">
+  <div class="slide-inner">
+    <div class="brand">
+      <svg width="34" height="26" viewBox="0 0 84 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#9FD3E0" stroke-width="5" stroke-linecap="round"/>
+        <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#E8654A" stroke-width="5" stroke-linecap="round" transform="translate(0,16)"/>
+        <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#fff" stroke-width="5" stroke-linecap="round" transform="translate(0,32)"/>
+      </svg>
+      <span class="brand-word">Génome <em>Réunion</em></span>
+    </div>
+    <h2>Merci de votre attention</h2>
+    <p class="thanks">Un protocole n'a de valeur que discuté et éprouvé collectivement — vos questions et remarques y contribuent directement.</p>
+    <div class="authors">
+      <div><span class="name">Pr Bérénice Doray · Patrick Munier · Dr Thomas Huby · Susie Guilly · Dr Fanny Ferroul</span></div>
+      <div class="aff">Laboratoire de Génétique · CHU de La Réunion</div>
+    </div>
+    <div class="foot">Protocole de validation — Génome Réunion · Support pédagogique · Version 1.0 · 3 août 2026</div>
+  </div>
+</section>
+
+<button class="clickzone left" id="zoneLeft" aria-label="Diapositive précédente"></button>
+<button class="clickzone right" id="zoneRight" aria-label="Diapositive suivante"></button>
+
+<div class="chrome-top">
+  <div class="brand">
+    <svg width="26" height="20" viewBox="0 0 84 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#0F3A56" stroke-width="6" stroke-linecap="round"/>
+      <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#1E6E8C" stroke-width="6" stroke-linecap="round" transform="translate(0,16)"/>
+      <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#E8654A" stroke-width="6" stroke-linecap="round" transform="translate(0,32)"/>
+    </svg>
+    <span class="brand-word">Génome <em>Réunion</em></span>
+  </div>
+  <div class="counter" id="slideTitle"></div>
+</div>
+
+<div class="chrome-bottom">
+  <button class="navbtn" id="prevBtn">‹ Précédent</button>
+  <div class="dots" id="dots"></div>
+  <div style="display:flex; align-items:center; gap:16px">
+    <span class="counter"><strong id="curNum">1</strong> / <span id="totalNum"></span></span>
+    <button class="navbtn" id="nextBtn">Suivant ›</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var i = 0;
+
+  var dotsWrap = document.getElementById('dots');
+  slides.forEach(function(s, idx){
+    var d = document.createElement('button');
+    d.className = 'dot' + (idx === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Aller à la diapositive ' + (idx+1));
+    d.addEventListener('click', function(){ go(idx); });
+    dotsWrap.appendChild(d);
+  });
+
+  var tocList = document.getElementById('tocList');
+  slides.forEach(function(s, idx){
+    if (idx <= 1) return; // skip hero and the sommaire itself
+    var li = document.createElement('li');
+    var btn = document.createElement('button');
+    btn.className = 'toc-item';
+    var label = (idx === total - 1) ? '—' : String(idx - 1).padStart(2,'0');
+    btn.innerHTML = '<span class="toc-n">' + label + '</span><span class="toc-t">' + s.getAttribute('data-title') + '</span>';
+    btn.addEventListener('click', function(){ go(idx); });
+    li.appendChild(btn);
+    tocList.appendChild(li);
+  });
+
+  document.getElementById('totalNum').textContent = total;
+  var curNum = document.getElementById('curNum');
+  var slideTitle = document.getElementById('slideTitle');
+  var progressFill = document.getElementById('progressFill');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var dots = Array.prototype.slice.call(dotsWrap.children);
+
+  function render(){
+    slides.forEach(function(s, idx){ s.classList.toggle('active', idx === i); });
+    dots.forEach(function(d, idx){ d.classList.toggle('active', idx === i); });
+    curNum.textContent = i + 1;
+    slideTitle.textContent = slides[i].getAttribute('data-title');
+    progressFill.style.width = ((i) / (total - 1) * 100) + '%';
+    prevBtn.disabled = i === 0;
+    nextBtn.disabled = i === total - 1;
+  }
+
+  function go(n){
+    i = Math.max(0, Math.min(total - 1, n));
+    render();
+  }
+
+  prevBtn.addEventListener('click', function(){ go(i-1); });
+  nextBtn.addEventListener('click', function(){ go(i+1); });
+  document.getElementById('zoneLeft').addEventListener('click', function(){ go(i-1); });
+  document.getElementById('zoneRight').addEventListener('click', function(){ go(i+1); });
+
+  document.addEventListener('keydown', function(e){
+    if (['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key) > -1){ e.preventDefault(); go(i+1); }
+    else if (['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key) > -1){ e.preventDefault(); go(i-1); }
+    else if (e.key === 'Home'){ go(0); }
+    else if (e.key === 'End'){ go(total-1); }
+  });
+
+  var touchStartX = null;
+  document.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (touchStartX === null) return;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? go(i+1) : go(i-1); }
+    touchStartX = null;
+  }, {passive:true});
+
+  render();
+})();
+</script>
+</body>
+</html>
