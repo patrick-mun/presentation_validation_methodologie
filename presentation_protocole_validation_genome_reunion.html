@@ -178,13 +178,16 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
 .hero-meta span{color:var(--navy); font-weight:600}
 
 .idea-card{
-  position:relative; background:#fff; padding:clamp(26px,3vw,40px) clamp(28px,3vw,42px);
-  box-shadow:0 12px 32px rgba(15,58,86,.12); border:1px solid var(--pebble-light);
-  clip-path:polygon(0 0,100% 0,100% 78%,86% 100%,0 100%);
+  position:relative; padding:clamp(46px,5vw,64px) clamp(12px,1.6vw,22px) 0 clamp(12px,1.6vw,22px);
 }
-.idea-card::before{content:''; position:absolute; top:0; left:0; right:0; height:5px; background:var(--coral)}
-.idea-label{display:block; font-family:var(--font-ui); font-weight:700; font-size:clamp(.72rem,.85vw,.86rem); letter-spacing:.08em; text-transform:uppercase; color:var(--navy); margin-bottom:clamp(12px,1.6vh,18px)}
-.idea-card p{font-size:clamp(1.02rem,1.25vw,1.3rem); line-height:1.55; color:var(--ink)}
+.idea-card::before{
+  content:'\201C'; position:absolute; top:-1.2rem; left:clamp(-10px,-0.8vw,-4px); z-index:0;
+  font-family:var(--font-head); font-size:clamp(5rem,7.5vw,7.5rem); font-weight:600; line-height:1;
+  color:var(--coral); opacity:.2; pointer-events:none;
+}
+.idea-rule{position:relative; z-index:1; width:44px; height:3px; background:var(--coral); margin-bottom:clamp(14px,1.8vh,20px)}
+.idea-label{position:relative; z-index:1; display:block; font-family:var(--font-ui); font-weight:700; font-size:clamp(.72rem,.85vw,.86rem); letter-spacing:.08em; text-transform:uppercase; color:var(--navy); margin-bottom:clamp(12px,1.6vh,18px)}
+.idea-card p{position:relative; z-index:1; font-family:var(--font-head); font-style:italic; font-weight:500; font-size:clamp(1.1rem,1.5vw,1.55rem); line-height:1.5; color:var(--navy)}
 
 /* ---------- SOMMAIRE ---------- */
 .toc-list{list-style:none; columns:2; column-gap:clamp(48px,5vw,80px)}
@@ -267,6 +270,7 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
         </div>
       </div>
       <div class="idea-card">
+        <div class="idea-rule"></div>
         <span class="idea-label">Idée directrice</span>
         <p>Le protocole ne cherche pas seulement à présenter une stratégie de sélection. Il organise une démonstration contrôlée, pré-enregistrée et auditable de sa capacité à construire un panel WGS utile pour une population admixée.</p>
       </div>
