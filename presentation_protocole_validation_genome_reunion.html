@@ -66,6 +66,9 @@ h2.slide-title{font-size:clamp(2rem,4.4vw,3.6rem); max-width:22ch}
   justify-content:space-between; padding:0 32px; z-index:5; pointer-events:none;
 }
 .chrome-top .brand{opacity:.9}
+.chrome-top.on-dark #chromeLogo{filter:brightness(0) invert(1)}
+.chrome-top.on-dark .brand-word, .chrome-top.on-dark .brand-word em{color:#fff}
+.chrome-top.on-dark .counter, .chrome-top.on-dark .counter strong{color:var(--sky)}
 .progress-track{position:absolute; top:0; left:0; height:3px; background:var(--pebble-light); width:100%; z-index:6}
 .progress-fill{height:100%; background:linear-gradient(90deg,var(--teal),var(--coral)); transition:width .4s ease}
 
@@ -478,9 +481,9 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
 <button class="clickzone left" id="zoneLeft" aria-label="Diapositive précédente"></button>
 <button class="clickzone right" id="zoneRight" aria-label="Diapositive suivante"></button>
 
-<div class="chrome-top">
+<div class="chrome-top" id="chromeTop">
   <div class="brand">
-    <svg width="26" height="20" viewBox="0 0 84 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg id="chromeLogo" width="26" height="20" viewBox="0 0 84 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#0F3A56" stroke-width="6" stroke-linecap="round"/>
       <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#1E6E8C" stroke-width="6" stroke-linecap="round" transform="translate(0,16)"/>
       <path d="M0,11 C11,1 22,1 32,11 C42,21 53,21 63,11 C71,3 79,3 84,8" stroke="#E8654A" stroke-width="6" stroke-linecap="round" transform="translate(0,32)"/>
@@ -536,6 +539,7 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
   var prevBtn = document.getElementById('prevBtn');
   var nextBtn = document.getElementById('nextBtn');
   var dots = Array.prototype.slice.call(dotsWrap.children);
+  var chromeTop = document.getElementById('chromeTop');
 
   function render(){
     slides.forEach(function(s, idx){ s.classList.toggle('active', idx === i); });
@@ -545,6 +549,8 @@ ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--cora
     progressFill.style.width = ((i) / (total - 1) * 100) + '%';
     prevBtn.disabled = i === 0;
     nextBtn.disabled = i === total - 1;
+    var onDark = slides[i].classList.contains('hero') || slides[i].classList.contains('closing');
+    chromeTop.classList.toggle('on-dark', onDark);
   }
 
   function go(n){
